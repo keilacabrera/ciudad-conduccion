@@ -1,0 +1,11 @@
+target
+*.class
+.tmp
+.temp
+hs_err_pid
+replay_pid
+.vscode
+.DS_Store
+*~
+*.back
+*.orig

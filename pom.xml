@@ -1,0 +1,129 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- Identificación del proyecto -->
+  <groupId>com.graphics</groupId>
+  <artifactId>ciudad-conduccion</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>ciudad-conduccion</name>
+  <url>http://maven.apache.org</url>
+
+  <!-- Propiedades que se utilizan en el POM -->
+  <!-- Aqui definir la version de Java, LWJGL -->
+
+  <properties>
+    <!-- Version de Java para compilar -->
+    <!-- <maven.compiler.source>17</maven.compiler.source> -->
+    <!-- Version del bytecode generado -->
+    <!-- <maven.compiler.target>17</maven.compiler.target> -->
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Version de LWJGL -->
+    <lwjgl.version>3.3.3</lwjgl.version>
+    <!-- Clase que contiene un public static void main -->
+    <main.class>com.graphics.clase4</main.class>
+  </properties>
+
+  <!-- Bibliotecas que se utilizan en el proyecto -->
+  <dependencies>
+    <!-- Bindings Java y bibliotecas nativas. 
+    LWJGL selecciona las de la plataforma actual. -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- 
+      LWJGL: Son los binding de Java para OpenGL y GLFW 
+      Tres modulos principales:
+      - lwjgl: es el nucleo para la carga de la biblioteca nativa
+      - lwjgl-glfw: Crear ventana, teclado, raton
+      - lwjgl-opengl: Llamadas a OpenGL
+    -->
+    <dependency>
+      <groupId>org.lwjgl</groupId>
+      <artifactId>lwjgl</artifactId>
+      <version>${lwjgl.version}</version>
+    </dependency>
+    <!-- Biblioteca nativa de LWJGL para Windows -->
+    <dependency>
+        <groupId>org.lwjgl</groupId>
+        <artifactId>lwjgl</artifactId>
+        <version>${lwjgl.version}</version>
+        <classifier>natives-windows</classifier>
+        <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.lwjgl</groupId>
+      <artifactId>lwjgl-glfw</artifactId>
+      <version>${lwjgl.version}</version>
+    </dependency>
+    <!-- Biblioteca nativa de GLFW para Windows -->
+    <dependency>
+        <groupId>org.lwjgl</groupId>
+        <artifactId>lwjgl-glfw</artifactId>
+        <version>${lwjgl.version}</version>
+        <classifier>natives-windows</classifier>
+        <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.lwjgl</groupId>
+      <artifactId>lwjgl-opengl</artifactId>
+      <version>${lwjgl.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.lwjgl</groupId>
+      <artifactId>lwjgl-opengl</artifactId>
+      <version>${lwjgl.version}</version>
+      <classifier>natives-windows</classifier>
+    </dependency> 
+  </dependencies>
+
+  <!-- 
+      BUILD = como compilar y que plugins usar 
+    -->
+  <build>
+    <plugins>
+      <!-- 
+        Aqui forzamos JAVA 17 para que el compilador use esa version
+        aunque en el sistema haya otra
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <source>17</source>
+          <target>17</target>
+          <release>17</release>
+        </configuration>
+      </plugin>
+
+      <!-- 
+        exec-maven-plugin: permite ejecutar la aplicacion con "mvn exec:exec" 
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <executable>java</executable>
+          <arguments>
+            <!-- GLFW exige que el hilo principal sea el primero -->
+            <argument>-classpath</argument>
+            <classpath/>
+            <!-- La clase con main(); viene de la propiedad ${mainClass} (por defecto com.graphics.App) -->
+            <argument>${mainClass}</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
