@@ -3,6 +3,9 @@ package com.graphics;
 import static org.lwjgl.glfw.GLFW.*; // Permite consultar la tecla que controla el minimapa.
 import static org.lwjgl.opengl.GL11.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * CLASE 4: CIUDAD TERMINADA, ENTREGAS Y MINIMAPA.
  * Orden de lectura: estado, controles, entregas, decoración y segundo pase de dibujo.
@@ -12,18 +15,23 @@ import static org.lwjgl.opengl.GL11.*;
 public class clase4 extends clase3
 {
     // ==================== 1. ESTADO DEL JUEGO ====================
-    private boolean mostrarMapa = true; // Muestra el minimapa desde el inicio.
+    
     private int entregas = 0; // Cuenta las entregas completadas; también identifica el siguiente destino.
     private float tiempo = 0; // Acumula los segundos de la partida hasta completar el recorrido.
+    
+    private boolean mostrarMapa = true; // Muestra el minimapa desde el inicio.
     private HUD hud;
+
+    private final List<VehiculoAutonomo> vehiculosAutonomos = new ArrayList<>();
+    private boolean traficoInicializado = false;
+    
     private static final float[][] DESTINOS = { // Cada fila contiene X y Z de una parada sobre la calle.
         {50, -50}, // Primera entrega: esquina noreste.
         {-50, 50}, // Segunda entrega: esquina noroeste.
         {50, 50},// Tercera entrega: regreso al punto inicial.
     };
 
-    // Intersecciones que tendrán los semáforos.
-    // Cada posición representa {fila, columna}.
+    // Intersecciones que tendrán los semáforos. Cada posición representa {fila, columna}.
     protected static final int[][] CRUCES = {
         {1, 5},
         {3, 1},
@@ -60,9 +68,18 @@ public class clase4 extends clase3
     @Override // Añade el objetivo del juego al movimiento heredado.
     protected void actualizar(float deltaTime) {
         super.actualizar(deltaTime); // Procesa aceleración, giro, colisiones y título de la ventana.
+        
+        if (!traficoInicializado) {
+            inicializarVehiculosAutonomos();
+        }
+        for (VehiculoAutonomo vehiculo : vehiculosAutonomos) {
+            vehiculo.actualizar(deltaTime, this);
+        }
+
         if (entregas >= DESTINOS.length) { // Comprueba si ya se completaron todas las paradas.
             return; // Conserva el tiempo final y evita leer fuera del arreglo.
         }
+
         tiempo += deltaTime; // Suma los segundos de este cuadro al cronómetro.
         float distanciaX = autoX - DESTINOS[entregas][0]; // Calcula la separación horizontal al destino activo.
         float distanciaZ = autoZ - DESTINOS[entregas][1]; // Calcula la separación en profundidad al destino.
@@ -73,6 +90,8 @@ public class clase4 extends clase3
             entregas++; // Selecciona la siguiente parada o completa el juego.
         }
     }
+
+
 
     /** Compone el progreso que se añade al título de la ventana. */
     @Override // Amplía los indicadores de día/noche y faros de clase3.
@@ -94,6 +113,11 @@ public class clase4 extends clase3
     @Override // Amplía el dibujo acumulado de las tres etapas anteriores.
     protected void escena() {
         super.escena(); // Dibuja la ciudad, el auto y las farolas.
+        
+        for (VehiculoAutonomo vehiculo : vehiculosAutonomos) {
+            vehiculo.dibujar(this);
+        }
+
         if (!vistaMapa) { // Los detalles pequeños solo son necesarios en la vista principal.
             decorarCiudad(); // Añade árboles, bancos, ventanas y señalización urbana.
         }
@@ -180,11 +204,8 @@ public class clase4 extends clase3
         for (int[] cruce : CRUCES) {
             int fila = cruce[0];
             int columna = cruce[1];
-
             float x = centro(columna);
             float z = centro(fila);
-
-            // coservar el desplazamiento que ya utilizabas
             dibujarPasoPeatonal(x, z); // Añade el cruce pintado sobre la calle contigua.
             dibujarSemaforo(x + 4.5f, z - 4.5f);
         }
@@ -222,6 +243,74 @@ public class clase4 extends clase3
             caja(x, altura, z - 0.24f, 0.28f, 0.25f, 0.06f, rojo, verde, 0.02f); // Dibuja la bombilla frente a la carcasa.
         }
         entero("uEmision", 0); // Evita que el siguiente objeto herede la emisión del semáforo.
+    }
+
+    private float[] puntoRuta(int fila, int columna) {
+        return new float[] {
+            centro(columna),
+            centro(fila)
+        };
+    }
+    
+    private void inicializarVehiculosAutonomos() {
+        float[][] ruta1 = {
+            puntoRuta(2, 2), puntoRuta(2, 4),
+            puntoRuta(4, 4), puntoRuta(4, 2)
+        };
+
+        float[][] ruta2 = {
+            puntoRuta(2, 6), puntoRuta(2, 8),
+            puntoRuta(4, 8), puntoRuta(4, 6)
+        };
+
+        float[][] ruta3 = {
+            puntoRuta(6, 2), puntoRuta(6, 4),
+            puntoRuta(8, 4), puntoRuta(8, 2)
+        };
+
+        vehiculosAutonomos.add(new VehiculoAutonomo(ruta1, 5.0f));
+        vehiculosAutonomos.add(new VehiculoAutonomo(ruta2, 4.0f));
+        vehiculosAutonomos.add(new VehiculoAutonomo(ruta3, 6.0f));
+
+        traficoInicializado = true;
+
+        System.out.println(
+            "Vehículos autónomos creados: " + vehiculosAutonomos.size()
+        );
+    }
+    
+    protected boolean puedeCircularAutonomo(float x, float z) {
+        return super.puedeCircular(x, z);
+    }
+
+    @Override
+    protected boolean puedeCircular(float x, float z) {
+
+        // Primero comprueba los límites y edificios.
+        if (!super.puedeCircular(x, z)) {
+            return false;
+        }
+
+        // Si todavía no se inicializó el tráfico, no hay autos que comprobar.
+        if (vehiculosAutonomos == null) {
+            return true;
+        }
+
+        float distanciaSegura = 3.0f;
+        float distanciaSeguraCuadrada = distanciaSegura * distanciaSegura;
+
+        for (VehiculoAutonomo vehiculo : vehiculosAutonomos) {
+
+            float dx = x - vehiculo.getX();
+            float dz = z - vehiculo.getZ();
+            float distanciaCuadrada = dx * dx + dz * dz;
+
+            if (distanciaCuadrada < distanciaSeguraCuadrada) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // ==================== 6. MINIMAPA: SEGUNDO PASE DE DIBUJO ====================
