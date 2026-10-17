@@ -29,18 +29,6 @@ public class clase3 extends clase2 {
         {9, 7, 1}
     };
     protected static final float[][] LUCES = generarLuces();
-    
-    // protected static final float[][] LUCES = { // Cada fila contiene la posición X, Y, Z de una bombilla.
-    //     {-24, 4.5f, -24}, // Farola de la manzana noroeste.
-    //     {-4, 4.5f, -24}, // Farola de la manzana norte central.
-    //     {16, 4.5f, -24}, // Farola de la manzana noreste.
-    //     {-24, 4.5f, -4}, // Farola de la manzana oeste central.
-    //     {-4, 4.5f, -4}, // Farola de la manzana central.
-    //     {16, 4.5f, -4}, // Farola de la manzana este central.
-    //     {-24, 4.5f, 16}, // Farola de la manzana suroeste.
-    //     {-4, 4.5f, 16}, // Farola de la manzana sur central.
-    //     {16, 4.5f, 16} // Farola de la manzana sureste.
-    // };
 
     // ==================== 2. CONTROLES E INDICADORES ====================
 
@@ -59,15 +47,15 @@ public class clase3 extends clase2 {
     /** Prepara el texto que clase2 incorpora al título de la ventana. */
     @Override // Añade información al espacio reservado para indicadores.
     protected String estadoExtra() {
-        String ambiente = "dia"; // Usa día como texto inicial.
-        if (noche) { // Comprueba si está seleccionado el ambiente nocturno.
-            ambiente = "noche"; // Reemplaza el texto por el estado real.
-        }
-        String estadoFaros = "OFF"; // Usa apagado como texto inicial de los focos.
-        if (faros) { // Comprueba si las luces del auto están activas.
-            estadoFaros = "ON"; // Indica que los faros están encendidos.
-        }
-        return " | N: " + ambiente + " | F: faros " + estadoFaros; // Devuelve ambos indicadores y sus teclas.
+        // String ambiente = "dia"; // Usa día como texto inicial.
+        // if (noche) { // Comprueba si está seleccionado el ambiente nocturno.
+        //     ambiente = "noche"; // Reemplaza el texto por el estado real.
+        // }
+        // String estadoFaros = "OFF"; // Usa apagado como texto inicial de los focos.
+        // if (faros) { // Comprueba si las luces del auto están activas.
+        //     estadoFaros = "ON"; // Indica que los faros están encendidos.
+        // }
+        return ""; // " | N: " + ambiente  + " | F: faros " + estadoFaros; // Devuelve ambos indicadores y sus teclas.
     }
 
     // ==================== 3. DATOS QUE RECIBE EL SHADER ====================

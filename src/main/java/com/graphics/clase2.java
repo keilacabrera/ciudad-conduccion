@@ -50,11 +50,11 @@ public class clase2 extends clase1 {
         super.actualizar(deltaTime);
         float acelerador = 0; // Sin teclas pulsadas no se aplica aceleración del motor.
 
-        if (pulsada(GLFW_KEY_W) || pulsada(GLFW_KEY_UP)) { // Acepta W o flecha arriba para avanzar.
+        if (pulsada(GLFW_KEY_W)) { // Acepta W para avanzar.
             acelerador += 1; // Solicita aceleración hacia delante.
         }
 
-        if (pulsada(GLFW_KEY_S) || pulsada(GLFW_KEY_DOWN)) { // Acepta S o flecha abajo para retroceder.
+        if (pulsada(GLFW_KEY_S)) { // Acepta S para retroceder.
             acelerador -= 1; // Primero reduce la velocidad positiva y después entra en reversa.
         }
 
@@ -95,11 +95,11 @@ public class clase2 extends clase1 {
 
     /** Compone el texto de la ventana sin mezclarlo con las fórmulas de conducción. */
     private void actualizarTitulo() {
-        int kilometrosPorHora = Math.round(Math.abs(velocidad) * 3.6f); // Convierte m/s a km/h y redondea.
+        // int kilometrosPorHora = Math.round(Math.abs(velocidad) * 3.6f); // Convierte m/s a km/h y redondea.
         String titulo = getClass().getSimpleName(); // Obtiene el nombre de la etapa que se está ejecutando.
-        titulo += " | WASD/flechas: conducir | Espacio: freno"; // Añade los controles del vehículo.
-        titulo += " | C: camara | R: reiniciar | "; // Añade los controles de cámara y reinicio.
-        titulo += kilometrosPorHora + " km/h"; // Añade la magnitud de la velocidad.
+        // titulo += " | Espacio: freno"; // Añade los controles del vehículo.
+        // titulo += " | C: camara | R: reiniciar | "; // Añade los controles de cámara y reinicio.
+        // titulo += kilometrosPorHora + " km/h"; // Añade la magnitud de la velocidad.
         titulo += estadoExtra(); // Permite a clase3 y clase4 añadir luces y entregas.
         glfwSetWindowTitle(ventana, titulo); // Publica el texto en la barra superior de la ventana.
 

@@ -97,11 +97,11 @@ public class clase4 extends clase3
     @Override // Amplía los indicadores de día/noche y faros de clase3.
     protected String estadoExtra() {
         String mensaje = super.estadoExtra(); // Recupera los indicadores de iluminación.
-        mensaje += " | M: mapa | "; // Muestra la tecla que alterna el minimapa.
+        // mensaje += " | M: mapa | "; // Muestra la tecla que alterna el minimapa.
         if (entregas == DESTINOS.length) { // Selecciona el texto de victoria al completar las tres paradas.
             mensaje += "GANASTE en " + (int) tiempo + " s! R: jugar otra vez"; // Muestra tiempo final y opción de reinicio.
         } else { // Durante el recorrido muestra progreso e instrucciones.
-            mensaje += "Entregas " + entregas + "/3"; // Indica cuántas paradas se completaron.
+            // mensaje += "Entregas " + entregas + "/3"; // Indica cuántas paradas se completaron.
             mensaje += " | Frena en la marca dorada | " + (int) tiempo + " s"; // Explica la condición de entrega y el tiempo.
         }
         return mensaje; // Entrega el texto a actualizarTitulo() de clase2.

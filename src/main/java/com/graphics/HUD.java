@@ -24,6 +24,11 @@ public class HUD {
     private BufferedImage imagen;
     private Graphics2D g;
 
+    // Tiempo durante el cual se muestran los controles al iniciar.
+    private static final long DURACION_CONTROLES = 6_000_000_000L;
+    // Instante en el que se creó el HUD.
+    private final long tiempoInicio = System.nanoTime();
+
     public HUD(int ancho, int alto) {
 
         this.ancho = ancho;
@@ -46,35 +51,58 @@ public class HUD {
         limpiar();
 
         // ------------- PANEL SUPERIOR IZQUIERDO --------------------
-        panel(20, 20, 300, 150);
-        texto("CIUDAD 3D",40,55,28, Color.WHITE);
-        texto(noche ? "Noche" : "Día",40,85,18, Color.WHITE);
-        texto("Faros: " + (faros ? "ON" : "OFF"),40,110,18, Color.WHITE);
-        texto("Camara: " + (camaraAerea? "AEREA": "VEHICULO"),
-                40,135,18, Color.WHITE);
+        // panel(20, 20, 190, 105);
+        // Estado de iluminación
+        texto(noche ? "NOCHE" : "DIA", 35, 47, 18, Color.WHITE);
+        // Estado de los faros
+        texto("Faros: " + (faros ? "ON" : "OFF"), 35, 75, 18, Color.WHITE);
+        // Modo de cámara
+        texto("Camara: " + (camaraAerea ? "AEREA" : "VEHICULO"), 35, 102, 18, Color.WHITE);
 
         // ------------- PANEL DE CONTROLES --------------------
-        panel(20, alto - 145, 330, 110);
-        texto("CONTROLES",40, alto - 115,20, Color.WHITE);
-        texto("WASD / Flechas  -  Mover",
-                40, alto - 85,16, Color.WHITE);
-        texto("N  -  Día/Noche     F  -  Faros",
-                40, alto - 58,16, Color.WHITE);
+        // Calculamos cuánto tiempo ha transcurrido desde que se creó el HUD.
+        long tiempoTranscurrido = System.nanoTime() - tiempoInicio;
+        // Mostramos los controles solamente durante los primeros 6 segundos.
+        if (tiempoTranscurrido < DURACION_CONTROLES) {
+            panel(20, alto - 200, 265, 165);
+            texto("CONTROLES", 40, alto - 170, 20, Color.WHITE);
+            texto("N  -  Día/Noche   M  -  Mapa", 40, alto - 140, 16, Color.WHITE);
+            texto("C  -  Cámara        F  -  Faros", 40, alto - 110, 16, Color.WHITE);
+            texto("R  -  Reiniciar      ESP  -  Freno", 40, alto - 80, 16, Color.WHITE);
+            texto("WASD  -  Conducir     ", 40, alto - 50, 16, Color.WHITE);
+        }
 
+        // ------------- INDICADOR DE ENTREGAS --------------------
+        textoCentrado("ENTREGAS", ancho / 2, 47, 18, Color.WHITE); // Título pequeño y discreto.
+        textoCentrado(entregas + " / " + totalEntregas, ancho / 2, 72, 20, Color.WHITE); // Contador de entregas.
+        // Tamaño y separación de los indicadores.
+        int tamañoPunto = 15;
+        int separacion = 22;
 
-        // ------------- PANEL DE ENTREGAS --------------------
-        panel(ancho / 2 - 110,20,220,65);
-        textoCentrado(
-                "Entregas: " + entregas + " / " + totalEntregas,
-                ancho / 2,60,20, Color.WHITE);
+        // Calculamos el ancho total para centrar los indicadores.
+        int anchoIndicadores = Math.max(0, totalEntregas - 1) * separacion;
+        int inicioX = ancho / 2 - anchoIndicadores / 2;
+
+        // Dibujamos un círculo por cada entrega.
+        for (int i = 0; i < totalEntregas; i++) {
+            // Las entregas completadas aparecen claras.
+            if (i < entregas) {
+                g.setColor(new Color(120, 230, 160));
+            } else {
+                // Las pendientes aparecen en gris oscuro.
+                g.setColor(new Color(75, 85, 95));
+            }
+            int x = inicioX + i * separacion - tamañoPunto / 2;
+            int y = 78;
+            g.fillOval(x, y, tamañoPunto, tamañoPunto);
+        }
 
         // ------------- PANEL DE VELOCIDAD --------------------
-        panel(ancho - 240, alto - 145, 210, 110);
-        int kmh = Math.round(Math.abs(velocidad) * 3.6f);
-        textoCentrado(String.valueOf(kmh), ancho - 135,
-                        alto - 95, 42, Color.WHITE);
-        textoCentrado("KM/H", ancho - 135, alto - 58,
-                        18, Color.WHITE);
+        g.setColor(new Color(0, 0, 0, 75)); // Fondo oscuro discreto, sin borde.
+        g.fillRoundRect(ancho - 160, alto - 110, 140, 80, 18, 18);
+        int kmh = Math.round(Math.abs(velocidad) * 3.6f); // Calculamos la velocidad en km/h.     
+        textoCentrado(String.valueOf(kmh), ancho - 90, alto - 68, 36, Color.WHITE); // Velocidad: texto grande y protagonista.
+        textoCentrado("KM/H", ancho - 90, alto - 42, 14, new Color(190, 200, 210)); // Unidad: texto pequeño y secundario.
 
         actualizarTextura(); // Actualizando textura
 
@@ -102,10 +130,8 @@ public class HUD {
 
     // ==================== PANEL ====================
     private void panel(int x, int y, int ancho, int alto) {
-        g.setColor(new Color(0, 0, 0, 120));
+        g.setColor(new Color(0, 0, 0, 75));
         g.fillRoundRect(x, y, ancho, alto, 18, 18);
-        g.setColor(new Color(255, 255, 255, 80));
-        g.drawRoundRect(x, y, ancho, alto, 18, 18);
     }
 
     // ==================== TEXTO ====================
