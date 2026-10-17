@@ -24,6 +24,7 @@ public class clase4 extends clase3
 
     private final List<VehiculoAutonomo> vehiculosAutonomos = new ArrayList<>();
     private boolean traficoInicializado = false;
+    private final Remolque remolque = new Remolque();
     
     private static final float[][] DESTINOS = { // Cada fila contiene X y Z de una parada sobre la calle.
         {50, -50}, // Primera entrega: esquina noreste.
@@ -69,6 +70,8 @@ public class clase4 extends clase3
     protected void actualizar(float deltaTime) {
         super.actualizar(deltaTime); // Procesa aceleración, giro, colisiones y título de la ventana.
         
+        remolque.actualizar(autoX, autoZ, angulo, velocidad, deltaTime);
+
         if (!traficoInicializado) {
             inicializarVehiculosAutonomos();
         }
@@ -124,6 +127,8 @@ public class clase4 extends clase3
         if (entregas < DESTINOS.length) { // Dibuja un objetivo únicamente mientras queden entregas.
             dibujarDestino(); // Coloca la marca dorada en la parada activa.
         }
+
+        remolque.dibujar(this);
     }
 
     /** Marca la próxima parada con una plataforma y una baliza flotante. */
